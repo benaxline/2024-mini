@@ -25,15 +25,23 @@ def quiet():
     speaker.duty_u16(0)
 
 
-freq: float = 30
-duration: float = 0.1  # seconds
+notes={
+    "C5":523.25,
+    "B4":466.16,
+    "A4":415.30,
+    "G4":392.00
+    }
+
+
+melody = [
+    ("C5",0.5), ("B4", 0.5), ("A4", 0.5), ("G4",0.5), ("G4", 0.3), ("A4", 0.3),
+    ("A4", 0.3), ("A4", 0.3), ("G4", 0.3), ("A4", 0.3), ("A4", 0.3), ("A4", 0.3)
+    ]
 
 print("Playing frequency (Hz):")
 
-for i in range(64):
-    print(freq)
-    playtone(freq, duration)
-    freq = int(freq * 1.1)
+for note, duration in melody:
+    playtone(notes[note], duration)
 
 # Turn off the PWM
 quiet()
