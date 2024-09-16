@@ -6,6 +6,8 @@ from machine import Pin
 import time
 import random
 import json
+import network
+import urequests
 
 
 N: int = 10
@@ -80,9 +82,63 @@ def scorer(t: list[int | None]) -> None:
 
     write_json(filename, data)
 
+    send_data_to_server(data)
+
+
+def scan_wifi():
+    # Initialize the Wi-Fi interface in station mode
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+
+    print("Scanning for available networks...")
+    networks = wlan.scan()  # Scans for available Wi-Fi networks
+
+    if not networks:
+        print("No networks found.")
+        return
+
+    # Display the list of available networks
+    for network_info in networks:
+        ssid = network_info[0].decode()  # SSID (network name)
+        bssid = network_info[1]  # MAC address of the AP
+        channel = network_info[2]  # Channel number
+        RSSI = network_info[3]  # Signal strength
+        authmode = network_info[4]  # Authentication mode
+        
+        print(f"SSID: {ssid}, RSSI: {RSSI}, Channel: {channel}, Auth Mode: {authmode}")
+
+def connect_to_wifi(ssid, password):
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(ssid, password)
+
+    # Wait for connection
+    while not wlan.isconnected():
+        print("Connecting to WiFi...")
+        time.sleep(1)
+    print("Connected to WiFi:", wlan.ifconfig())
+
+def send_data_to_server(data):
+    """Sends the data to the server via HTTP POST."""
+    headers = {"Content-Type": "application/json"}
+    try:
+        response = urequests.post(API_URL, headers=headers, data=json.dumps(data))
+        print("Data uploaded:", response.text)
+        response.close()
+    except Exception as e:
+        print("Failed to send data:", e)
 
 if __name__ == "__main__":
     # using "if __name__" allows us to reuse functions in other script files
+
+    # make this 'secret'
+    SSID = "Ben"
+    PASSWORD = "Password"
+
+    API_URL = "https://ben-mini-default-rtdb.firebaseio.com/data.json"
+
+    connect_to_wifi(SSID, PASSWORD)
+
 
     led = Pin("LED", Pin.OUT)
     button = Pin(16, Pin.IN, Pin.PULL_UP)
@@ -110,3 +166,7 @@ if __name__ == "__main__":
     blinker(5, led)
 
     scorer(t)
+
+    # scan_wifi()
+   
+
