@@ -1,7 +1,7 @@
 Benjamin Axline and Youchen Li
 
 ## Exercise 1:
-1. We found that the `max_bright` was around 960 and `min_bright` was around 43000. 
+1. We observed that the "max_bright" is about 65000, and the "min_bright" is about 20000. 
 
 ## Exercise 2:
 1. Create a song..."Stayin' Alive" Chorus.
